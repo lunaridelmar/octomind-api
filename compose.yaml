@@ -6,6 +6,8 @@ services:
       POSTGRES_DB: octomind
       POSTGRES_USER: octomind
       POSTGRES_PASSWORD: octomind
+      TZ: UTC
+      PGTZ: UTC
     ports:
       - "5432:5432"
     volumes:
