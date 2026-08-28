@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: octomind-postgres
+    environment:
+      POSTGRES_DB: octomind
+      POSTGRES_USER: octomind
+      POSTGRES_PASSWORD: octomind
+    ports:
+      - "5432:5432"
+    volumes:
+      - octomind-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  octomind-postgres-data:
