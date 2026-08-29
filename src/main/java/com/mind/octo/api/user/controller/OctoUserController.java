@@ -1,5 +1,6 @@
 package com.mind.octo.api.user.controller;
 
+import com.mind.octo.api.user.dto.OctoUserLoginRequest;
 import com.mind.octo.api.user.dto.OctoUserRegistrationRequest;
 import com.mind.octo.api.user.dto.OctoUserResponse;
 import com.mind.octo.api.user.service.OctoUserService;
@@ -23,5 +24,12 @@ public class OctoUserController {
             @Valid @RequestBody OctoUserRegistrationRequest request
     ) {
         return octoUserService.register(request);
+    }
+
+    @PostMapping("/login")
+    public OctoUserResponse login(
+            @Valid @RequestBody OctoUserLoginRequest request
+    ) {
+        return octoUserService.login(request);
     }
 }

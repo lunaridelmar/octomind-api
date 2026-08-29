@@ -23,7 +23,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/register",
+                                "/api/users/login")
+                        .permitAll()
                         .anyRequest().authenticated()
                 );
 
