@@ -1,11 +1,13 @@
 package com.mind.octo.api.user.controller;
 
 import com.mind.octo.api.user.dto.OctoUserLoginRequest;
+import com.mind.octo.api.user.dto.OctoUserLoginResponse;
 import com.mind.octo.api.user.dto.OctoUserRegistrationRequest;
 import com.mind.octo.api.user.dto.OctoUserResponse;
 import com.mind.octo.api.user.service.OctoUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,9 +29,17 @@ public class OctoUserController {
     }
 
     @PostMapping("/login")
-    public OctoUserResponse login(
+    public OctoUserLoginResponse login(
             @Valid @RequestBody OctoUserLoginRequest request
     ) {
         return octoUserService.login(request);
+    }
+
+    @GetMapping("/me")
+    public OctoUserResponse me(Authentication authentication) {
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        return octoUserService.getUserById(userId);
     }
 }
