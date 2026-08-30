@@ -1,9 +1,13 @@
-package com.mind.octo.api.user.exception;
+package com.mind.octo.api.exception;
 
+import com.mind.octo.api.mind.exception.MindNotFoundException;
+import com.mind.octo.api.user.exception.EmailAlreadyRegisteredException;
+import com.mind.octo.api.user.exception.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -49,5 +53,17 @@ public class GlobalExceptionHandler {
                 .body(Map.of(
                         "message", exception.getMessage()
                 ));
+    }
+
+    @ExceptionHandler(MindNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleMindNotFound(MindNotFoundException exception) {
+        return Map.of("message", exception.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleUserNotFound(UserNotFoundException exception) {
+        return Map.of("message", exception.getMessage());
     }
 }

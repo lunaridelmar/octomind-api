@@ -1,5 +1,6 @@
 package com.mind.octo.api.user.service;
 
+import com.mind.octo.api.exception.UserNotFoundException;
 import com.mind.octo.api.security.JwtService;
 import com.mind.octo.api.user.dto.OctoUserLoginRequest;
 import com.mind.octo.api.user.dto.OctoUserLoginResponse;
@@ -87,7 +88,7 @@ public class OctoUserService {
         OctoUserEntity octoUser = octoUserRepository
                 .findById(userId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("User not found")
+                        new UserNotFoundException("User not found")
                 );
 
         return new OctoUserResponse(

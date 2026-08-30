@@ -38,4 +38,14 @@ public class MindController {
 
         return mindService.getUserMinds(userId);
     }
+
+    @GetMapping("/{id}")
+    public MindResponse getMind(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.getMindById(userId, id);
+    }
 }
