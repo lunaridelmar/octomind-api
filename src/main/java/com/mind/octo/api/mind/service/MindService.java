@@ -171,4 +171,38 @@ public class MindService {
                 savedMind.getUpdatedAt()
         );
     }
+
+    public List<MindResponse> getActiveMinds(Long userId) {
+
+        return mindRepository.findAllByUserIdAndArchivedFalse(userId)
+                .stream()
+                .map(mind -> new MindResponse(
+                        mind.getId(),
+                        mind.getName(),
+                        mind.getDescription(),
+                        mind.getIcon(),
+                        mind.getColor(),
+                        mind.isArchived(),
+                        mind.getCreatedAt(),
+                        mind.getUpdatedAt()
+                ))
+                .toList();
+    }
+
+    public List<MindResponse> getArchivedMinds(Long userId) {
+
+        return mindRepository.findAllByUserIdAndArchivedTrue(userId)
+                .stream()
+                .map(mind -> new MindResponse(
+                        mind.getId(),
+                        mind.getName(),
+                        mind.getDescription(),
+                        mind.getIcon(),
+                        mind.getColor(),
+                        mind.isArchived(),
+                        mind.getCreatedAt(),
+                        mind.getUpdatedAt()
+                ))
+                .toList();
+    }
 }

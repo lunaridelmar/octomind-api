@@ -10,4 +10,6 @@ public interface MindRepository extends JpaRepository<MindEntity, Long> {
 
     List<MindEntity> findAllByUserId(Long userId);
     Optional<MindEntity> findByIdAndUserId(Long id, Long userId);
+    List<MindEntity> findAllByUserIdAndArchivedFalse(Long userId);
+    List<MindEntity> findAllByUserIdAndArchivedTrue(Long userId);
 }

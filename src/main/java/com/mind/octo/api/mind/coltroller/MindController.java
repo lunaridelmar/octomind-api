@@ -80,4 +80,20 @@ public class MindController {
 
         return mindService.restoreMind(userId, id);
     }
+
+    @GetMapping("/active")
+    public List<MindResponse> getActiveMinds(Authentication authentication) {
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.getActiveMinds(userId);
+    }
+
+    @GetMapping("/archived")
+    public List<MindResponse> getArchivedMinds(Authentication authentication) {
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.getArchivedMinds(userId);
+    }
 }
