@@ -2,6 +2,7 @@ package com.mind.octo.api.mind.service;
 
 import com.mind.octo.api.mind.dto.CreateMindRequest;
 import com.mind.octo.api.mind.dto.MindResponse;
+import com.mind.octo.api.mind.dto.UpdateMindRequest;
 import com.mind.octo.api.mind.entity.MindEntity;
 import com.mind.octo.api.mind.exception.MindNotFoundException;
 import com.mind.octo.api.exception.UserNotFoundException;
@@ -89,6 +90,37 @@ public class MindService {
                 mind.isArchived(),
                 mind.getCreatedAt(),
                 mind.getUpdatedAt()
+        );
+    }
+
+    public MindResponse updateMind(
+            Long userId,
+            Long mindId,
+            UpdateMindRequest request
+    ) {
+
+        MindEntity mind = mindRepository
+                .findByIdAndUserId(mindId, userId)
+                .orElseThrow(() ->
+                        new MindNotFoundException("Mind not found")
+                );
+
+        mind.setName(request.name());
+        mind.setDescription(request.description());
+        mind.setIcon(request.icon());
+        mind.setColor(request.color());
+
+        MindEntity savedMind = mindRepository.save(mind);
+
+        return new MindResponse(
+                savedMind.getId(),
+                savedMind.getName(),
+                savedMind.getDescription(),
+                savedMind.getIcon(),
+                savedMind.getColor(),
+                savedMind.isArchived(),
+                savedMind.getCreatedAt(),
+                savedMind.getUpdatedAt()
         );
     }
 }

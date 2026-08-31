@@ -2,6 +2,7 @@ package com.mind.octo.api.mind.coltroller;
 
 import com.mind.octo.api.mind.dto.CreateMindRequest;
 import com.mind.octo.api.mind.dto.MindResponse;
+import com.mind.octo.api.mind.dto.UpdateMindRequest;
 import com.mind.octo.api.mind.service.MindService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -47,5 +48,16 @@ public class MindController {
         Long userId = (Long) authentication.getPrincipal();
 
         return mindService.getMindById(userId, id);
+    }
+
+    @PutMapping("/{id}")
+    public MindResponse updateMind(
+            @PathVariable Long id,
+            Authentication authentication,
+            @Valid @RequestBody UpdateMindRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.updateMind(userId, id, request);
     }
 }
