@@ -3,6 +3,7 @@ package com.mind.octo.api.exception;
 import com.mind.octo.api.mind.exception.MindNotFoundException;
 import com.mind.octo.api.user.exception.EmailAlreadyRegisteredException;
 import com.mind.octo.api.user.exception.InvalidCredentialsException;
+import com.mind.octo.api.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

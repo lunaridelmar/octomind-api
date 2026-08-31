@@ -1,6 +1,6 @@
 package com.mind.octo.api.user.service;
 
-import com.mind.octo.api.exception.UserNotFoundException;
+import com.mind.octo.api.user.exception.UserNotFoundException;
 import com.mind.octo.api.security.JwtService;
 import com.mind.octo.api.user.dto.OctoUserLoginRequest;
 import com.mind.octo.api.user.dto.OctoUserLoginResponse;

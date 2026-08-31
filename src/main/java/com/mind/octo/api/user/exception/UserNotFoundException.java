@@ -1,4 +1,4 @@
-package com.mind.octo.api.exception;
+package com.mind.octo.api.user.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

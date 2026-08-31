@@ -5,9 +5,9 @@ import com.mind.octo.api.mind.dto.MindResponse;
 import com.mind.octo.api.mind.dto.UpdateMindRequest;
 import com.mind.octo.api.mind.entity.MindEntity;
 import com.mind.octo.api.mind.exception.MindNotFoundException;
-import com.mind.octo.api.exception.UserNotFoundException;
 import com.mind.octo.api.mind.repository.MindRepository;
 import com.mind.octo.api.user.entity.OctoUserEntity;
+import com.mind.octo.api.user.exception.UserNotFoundException;
 import com.mind.octo.api.user.repository.OctoUserRepository;
 import org.springframework.stereotype.Service;
 
@@ -44,32 +44,14 @@ public class MindService {
 
         MindEntity savedMind = mindRepository.save(mind);
 
-        return new MindResponse(
-                savedMind.getId(),
-                savedMind.getName(),
-                savedMind.getDescription(),
-                savedMind.getIcon(),
-                savedMind.getColor(),
-                savedMind.isArchived(),
-                savedMind.getCreatedAt(),
-                savedMind.getUpdatedAt()
-        );
+        return toResponse(savedMind);
     }
 
     public List<MindResponse> getUserMinds(Long userId) {
 
         return mindRepository.findAllByUserId(userId)
                 .stream()
-                .map(mind -> new MindResponse(
-                        mind.getId(),
-                        mind.getName(),
-                        mind.getDescription(),
-                        mind.getIcon(),
-                        mind.getColor(),
-                        mind.isArchived(),
-                        mind.getCreatedAt(),
-                        mind.getUpdatedAt()
-                ))
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -81,16 +63,7 @@ public class MindService {
                         new MindNotFoundException("Mind not found")
                 );
 
-        return new MindResponse(
-                mind.getId(),
-                mind.getName(),
-                mind.getDescription(),
-                mind.getIcon(),
-                mind.getColor(),
-                mind.isArchived(),
-                mind.getCreatedAt(),
-                mind.getUpdatedAt()
-        );
+        return toResponse(mind);
     }
 
     public MindResponse updateMind(
@@ -112,16 +85,7 @@ public class MindService {
 
         MindEntity savedMind = mindRepository.save(mind);
 
-        return new MindResponse(
-                savedMind.getId(),
-                savedMind.getName(),
-                savedMind.getDescription(),
-                savedMind.getIcon(),
-                savedMind.getColor(),
-                savedMind.isArchived(),
-                savedMind.getCreatedAt(),
-                savedMind.getUpdatedAt()
-        );
+        return toResponse(savedMind);
     }
 
     public MindResponse archiveMind(Long userId, Long mindId) {
@@ -136,16 +100,7 @@ public class MindService {
 
         MindEntity savedMind = mindRepository.save(mind);
 
-        return new MindResponse(
-                savedMind.getId(),
-                savedMind.getName(),
-                savedMind.getDescription(),
-                savedMind.getIcon(),
-                savedMind.getColor(),
-                savedMind.isArchived(),
-                savedMind.getCreatedAt(),
-                savedMind.getUpdatedAt()
-        );
+        return toResponse(savedMind);
     }
 
     public MindResponse restoreMind(Long userId, Long mindId) {
@@ -160,32 +115,14 @@ public class MindService {
 
         MindEntity savedMind = mindRepository.save(mind);
 
-        return new MindResponse(
-                savedMind.getId(),
-                savedMind.getName(),
-                savedMind.getDescription(),
-                savedMind.getIcon(),
-                savedMind.getColor(),
-                savedMind.isArchived(),
-                savedMind.getCreatedAt(),
-                savedMind.getUpdatedAt()
-        );
+        return toResponse(savedMind);
     }
 
     public List<MindResponse> getActiveMinds(Long userId) {
 
         return mindRepository.findAllByUserIdAndArchivedFalse(userId)
                 .stream()
-                .map(mind -> new MindResponse(
-                        mind.getId(),
-                        mind.getName(),
-                        mind.getDescription(),
-                        mind.getIcon(),
-                        mind.getColor(),
-                        mind.isArchived(),
-                        mind.getCreatedAt(),
-                        mind.getUpdatedAt()
-                ))
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -193,16 +130,20 @@ public class MindService {
 
         return mindRepository.findAllByUserIdAndArchivedTrue(userId)
                 .stream()
-                .map(mind -> new MindResponse(
-                        mind.getId(),
-                        mind.getName(),
-                        mind.getDescription(),
-                        mind.getIcon(),
-                        mind.getColor(),
-                        mind.isArchived(),
-                        mind.getCreatedAt(),
-                        mind.getUpdatedAt()
-                ))
+                .map(this::toResponse)
                 .toList();
+    }
+
+    private MindResponse toResponse(MindEntity mind) {
+        return new MindResponse(
+                mind.getId(),
+                mind.getName(),
+                mind.getDescription(),
+                mind.getIcon(),
+                mind.getColor(),
+                mind.isArchived(),
+                mind.getCreatedAt(),
+                mind.getUpdatedAt()
+        );
     }
 }
