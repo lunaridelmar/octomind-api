@@ -123,4 +123,52 @@ public class MindService {
                 savedMind.getUpdatedAt()
         );
     }
+
+    public MindResponse archiveMind(Long userId, Long mindId) {
+
+        MindEntity mind = mindRepository
+                .findByIdAndUserId(mindId, userId)
+                .orElseThrow(() ->
+                        new MindNotFoundException("Mind not found")
+                );
+
+        mind.setArchived(true);
+
+        MindEntity savedMind = mindRepository.save(mind);
+
+        return new MindResponse(
+                savedMind.getId(),
+                savedMind.getName(),
+                savedMind.getDescription(),
+                savedMind.getIcon(),
+                savedMind.getColor(),
+                savedMind.isArchived(),
+                savedMind.getCreatedAt(),
+                savedMind.getUpdatedAt()
+        );
+    }
+
+    public MindResponse restoreMind(Long userId, Long mindId) {
+
+        MindEntity mind = mindRepository
+                .findByIdAndUserId(mindId, userId)
+                .orElseThrow(() ->
+                        new MindNotFoundException("Mind not found")
+                );
+
+        mind.setArchived(false);
+
+        MindEntity savedMind = mindRepository.save(mind);
+
+        return new MindResponse(
+                savedMind.getId(),
+                savedMind.getName(),
+                savedMind.getDescription(),
+                savedMind.getIcon(),
+                savedMind.getColor(),
+                savedMind.isArchived(),
+                savedMind.getCreatedAt(),
+                savedMind.getUpdatedAt()
+        );
+    }
 }

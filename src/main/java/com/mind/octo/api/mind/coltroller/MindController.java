@@ -60,4 +60,24 @@ public class MindController {
 
         return mindService.updateMind(userId, id, request);
     }
+
+    @PatchMapping("/{id}/archive")
+    public MindResponse archiveMind(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.archiveMind(userId, id);
+    }
+
+    @PatchMapping("/{id}/restore")
+    public MindResponse restoreMind(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        return mindService.restoreMind(userId, id);
+    }
 }
