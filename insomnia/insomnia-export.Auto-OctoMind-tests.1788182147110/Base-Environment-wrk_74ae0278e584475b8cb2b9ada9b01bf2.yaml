@@ -1,0 +1,22 @@
+type: environment.insomnia.rest/5.0
+schema_version: "5.1"
+name: Base Environment
+meta:
+  id: wrk_74ae0278e584475b8cb2b9ada9b01bf2
+  created: 1788176756994
+  modified: 1788176756994
+  description: ""
+environments:
+  name: Base Environment
+  meta:
+    id: env_e763b0ba1bfc4a5a934f2e6af20627c2a4b73047
+    created: 1788176756995
+    modified: 1788181760627
+    isPrivate: false
+  data:
+    base_url: http://localhost:8080
+    email: ""
+    password: TestPassword123!
+    token: ""
+    user_id: ""
+    mind_id: ""
