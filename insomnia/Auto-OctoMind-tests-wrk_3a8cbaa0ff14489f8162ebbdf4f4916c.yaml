@@ -1,0 +1,1740 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Auto OctoMind tests
+meta:
+  id: wrk_3a8cbaa0ff14489f8162ebbdf4f4916c
+  created: 1788177103110
+  modified: 1788182112140
+  description: ""
+collection:
+  - name: Mind requests
+    meta:
+      id: fld_c313ddee6a49486783c1246ddfac2687
+      created: 1788287843703
+      modified: 1788287843703
+      sortKey: -1788287843703
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/minds"
+        name: 1. Create mind - valid
+        meta:
+          id: req_7b4bcf83b597485299fa3ff2130048c5
+          created: 1788177757673
+          modified: 1788287886455
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850237
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Career"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind with only name returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('Optional fields can be null', () => {
+                insomnia.expect(body.name).to.eql('Career');
+                insomnia.expect(body.description).to.eql(null);
+                insomnia.expect(body.icon).to.eql(null);
+                insomnia.expect(body.color).to.eql(null);
+                insomnia.expect(body.archived).to.eql(false);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: 2. Create mind - minimal body
+        meta:
+          id: req_229eb7f02d314468ac2c42312846a10c
+          created: 1788177867618
+          modified: 1788287914451
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850049.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Spanish",
+              "description": "Improve my Spanish",
+              "icon": "language",
+              "color": "blue"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('Created mind has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+            insomnia.test('Created mind has correct data', () => {
+                insomnia.expect(body.name).to.eql('Spanish');
+                insomnia.expect(body.description).to.eql('Improve my Spanish');
+                insomnia.expect(body.archived).to.eql(false);
+            });
+
+            insomnia.environment.set('mind_id', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: 3. Create mind - blank name
+        meta:
+          id: req_d5821046c3d2446bb865f83e71fb9ebe
+          created: 1788177917094
+          modified: 1788287916701
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850043.25
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "",
+              "description": "Should not be created",
+              "icon": "test",
+              "color": "red"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            insomnia.test('Blank name returns 400', () => {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: 5. Create mind - name too long
+        meta:
+          id: req_acefd2a8a8144ffdad37ff2d118db994
+          created: 1788177975921
+          modified: 1788287921477
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850038.5625
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            insomnia.test('Name longer than 100 characters returns 400', () => {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: 4. Create mind - missing name
+        meta:
+          id: req_df355dc43eeb4bf1a05b82b9c2b0fc2e
+          created: 1788178114267
+          modified: 1788287919469
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850040.125
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "description": "Mind without a name"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            insomnia.test('Blank name returns 400', () => {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/{{ mind_id }}"
+        name: Get mind by ID
+        meta:
+          id: req_8f9c31e15e4b4af9ae9068a85777ce58
+          created: 1788180553871
+          modified: 1788287951606
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849938.5625
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get mind by ID returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Returns requested mind', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('mind_id'))
+                );
+            });
+
+            insomnia.test('Mind belongs to current test run', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('mind_id'))
+                );
+
+                insomnia.expect(body.archived).to.eql(false);
+            });
+
+            insomnia.test('Mind contains timestamps', () => {
+                insomnia.expect(body.createdAt).to.be.a('string');
+                insomnia.expect(body.updatedAt).to.be.a('string');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/999999"
+        name: Get mind - nonexistent ID
+        meta:
+          id: req_2eb4ce8413dd4711864f643a52722385
+          created: 1788181274255
+          modified: 1788288020904
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849922.9375
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Nonexistent mind returns 404', () => {
+                insomnia.expect(insomnia.response.code).to.eql(404);
+            });
+
+            insomnia.test('Returns Mind not found message', () => {
+                insomnia.expect(body.message).to.eql('Mind not found');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Get all minds
+        meta:
+          id: req_6dc4bfdc547a4c76bf34720468d4d350
+          created: 1788181340239
+          modified: 1788287969701
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849907.3125
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get all minds returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Response is an array', () => {
+                insomnia.expect(body).to.be.an('array');
+            });
+
+            insomnia.test('Contains created mind', () => {
+                const mindId = Number(insomnia.environment.get('mind_id'));
+
+                const createdMind = body.find(mind => mind.id === mindId);
+
+                insomnia.expect(createdMind).to.not.eql(undefined);
+                insomnia.expect(createdMind.name).to.eql('Spanish');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/{{ mind_id }}"
+        name: Update mind
+        meta:
+          id: req_443a3cdae2c448e3810e5dc54edee3c4
+          created: 1788181442393
+          modified: 1788287967762
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849901.0625
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Spanish Updated",
+              "description": "Improve Spanish every day",
+              "icon": "book",
+              "color": "green"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+          prefix: ""
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Update mind returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+
+            insomnia.test('Updated mind has correct id', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('mind_id'))
+                );
+            });
+
+
+            insomnia.test('Updated mind has new data', () => {
+                insomnia.expect(body.name).to.eql('Spanish Updated');
+                insomnia.expect(body.description).to.eql('Improve Spanish every day');
+                insomnia.expect(body.icon).to.eql('book');
+                insomnia.expect(body.color).to.eql('green');
+                insomnia.expect(body.archived).to.eql(false);
+            });
+
+
+            insomnia.test('Updated timestamp exists', () => {
+                insomnia.expect(body.updatedAt).to.be.a('string');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/{{ mind_id }}/archive"
+        name: Archive mind
+        meta:
+          id: req_f644ee3842a04b0d9c498ea8fc08a09a
+          created: 1788181609618
+          modified: 1788287994012
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849851.0625
+        method: PATCH
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+          prefix: ""
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Archive mind returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+
+            insomnia.test('Archives correct mind', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('mind_id'))
+                );
+            });
+
+
+            insomnia.test('Mind is archived', () => {
+                insomnia.expect(body.archived).to.eql(true);
+            });
+
+
+            insomnia.test('Mind keeps updated data', () => {
+                insomnia.expect(body.name).to.eql('Spanish Updated');
+                insomnia.expect(body.description).to.eql('Improve Spanish every day');
+                insomnia.expect(body.icon).to.eql('book');
+                insomnia.expect(body.color).to.eql('green');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/archived"
+        name: Get archived minds
+        meta:
+          id: req_d9fc74477b5246a3bb637f56f559e8bc
+          created: 1788181654993
+          modified: 1788288000612
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849826.0625
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get archived minds returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Response is an array', () => {
+                insomnia.expect(body).to.be.an('array');
+            });
+
+            insomnia.test('Contains archived mind', () => {
+                const mindId = Number(insomnia.environment.get('mind_id'));
+
+                const mind = body.find(mind => mind.id === mindId);
+
+                insomnia.expect(mind).to.not.eql(undefined);
+                insomnia.expect(mind.archived).to.eql(true);
+            });
+
+            insomnia.test('Archived mind has updated data', () => {
+                const mindId = Number(insomnia.environment.get('mind_id'));
+                const mind = body.find(mind => mind.id === mindId);
+
+                insomnia.expect(mind.name).to.eql('Spanish Updated');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/{{ mind_id }}/restore"
+        name: Restore mind
+        meta:
+          id: req_bb9e60993da246b782d3b191033dba21
+          created: 1788181708512
+          modified: 1788288002921
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849813.5625
+        method: PATCH
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+          prefix: ""
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Restore mind returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+
+            insomnia.test('Restores correct mind', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('mind_id'))
+                );
+            });
+
+
+            insomnia.test('Mind is active again', () => {
+                insomnia.expect(body.archived).to.eql(false);
+            });
+
+
+            insomnia.test('Mind keeps updated data', () => {
+                insomnia.expect(body.name).to.eql('Spanish Updated');
+                insomnia.expect(body.description).to.eql('Improve Spanish every day');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds/active"
+        name: Get active minds
+        meta:
+          id: req_0d5001d9221b42f0a6885297f6063395
+          created: 1788181742028
+          modified: 1788288007305
+          isPrivate: false
+          description: ""
+          sortKey: -1788287849807.3125
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+          prefix: ""
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get active minds returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Response is an array', () => {
+                insomnia.expect(body).to.be.an('array');
+            });
+
+            insomnia.test('Contains restored mind', () => {
+                const mindId = Number(insomnia.environment.get('mind_id'));
+
+                const mind = body.find(mind => mind.id === mindId);
+
+                insomnia.expect(mind).to.not.eql(undefined);
+                insomnia.expect(mind.archived).to.eql(false);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/login"
+        name: Login user
+        meta:
+          id: req_24169e9025cd4891a645d5ad88ba393e
+          created: 1788288128555
+          modified: 1788288131123
+          isPrivate: false
+          description: ""
+          sortKey: -1788287850337
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "{{ email }}",
+              "password": "{{ password }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Login returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Login returns token', () => {
+                insomnia.expect(body.token).to.be.a('string');
+                insomnia.expect(body.token.length).to.be.greaterThan(0);
+            });
+
+            insomnia.environment.set('token', body.token);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Combination requests
+    meta:
+      id: fld_b2e4110d02a244e0ab00844e4ab8db87
+      created: 1788288044194
+      modified: 1788289549418
+      sortKey: -1788288044194
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/mind-combinations"
+        name: Сreate Combination
+        meta:
+          id: req_de503554a2af4454873795fa8dc714e9
+          created: 1788265922732
+          modified: 1788288834434
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049207
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "mindIds": [
+                {{ mind_id_1 }},
+                {{ mind_id_2 }}
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            const mindId1 = Number(insomnia.environment.get('mind_id_1'));
+            const mindId2 = Number(insomnia.environment.get('mind_id_2'));
+
+            insomnia.test('Create combination returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('Created combination has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+            insomnia.test('Combination contains 2 minds', () => {
+                insomnia.expect(body.minds).to.be.an('array');
+                insomnia.expect(body.minds.length).to.eql(2);
+            });
+
+            insomnia.test('Combination contains requested minds', () => {
+                const ids = body.minds.map(mind => mind.id);
+
+                insomnia.expect(ids).to.include(mindId1);
+                insomnia.expect(ids).to.include(mindId2);
+            });
+
+            insomnia.environment.set('combination_id', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations"
+        name: Create Combination - Too Few Minds
+        meta:
+          id: req_5c97976cac864627a01e2adc819bebb9
+          created: 1788266052658
+          modified: 1788289246939
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049007
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "mindIds": [
+                {{ mind_id_1 }}
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Combination with one mind returns 400', () => {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+
+            insomnia.test('Returns minimum minds validation error', () => {
+                insomnia.expect(body.mindIds)
+                    .to.eql('At least two minds are required');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations"
+        name: Create Combination - Invalid Mind ID
+        meta:
+          id: req_63eaba8317de4a7eab0874ccb78bd0b7
+          created: 1788266079923
+          modified: 1788289239780
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049107
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "mindIds": [
+                {{ mind_id_1 }},
+                999999
+              ]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Invalid mind id returns 404', () => {
+                insomnia.expect(insomnia.response.code).to.eql(404);
+            });
+
+            insomnia.test('Returns expected error message', () => {
+                insomnia.expect(body.message)
+                    .to.eql('One or more minds are invalid');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind - Spanish
+        meta:
+          id: req_58f1a575ddb8498a95b9b0732306da4f
+          created: 1788266133739
+          modified: 1788289220992
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049257
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Spanish",
+              "description": "Improve my Spanish through real-life practice, media and creative projects",
+              "icon": "language",
+              "color": "yellow"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Create first test mind returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('First test mind has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+            insomnia.environment.set('mind_id_1', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind -  Programming
+        meta:
+          id: req_9fb9b82d2bc840e9b7bc38ca93c79211
+          created: 1788266193600
+          modified: 1788289397380
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049219.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Programming",
+              "description": "Build software, learn backend development and create useful digital products",
+              "icon": "code",
+              "color": "blue"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |+
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind with only name returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind - Traveling
+        meta:
+          id: req_9cd16de17f304168852a1979966f2d2e
+          created: 1788266208428
+          modified: 1788289427346
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049208.5625
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Travel",
+              "description": "Discover new countries, cultures, places and ways of living",
+              "icon": "globe",
+              "color": "green"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |+
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind with only name returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind -  Psycology
+        meta:
+          id: req_824596031e774cf29af87bdae8078369
+          created: 1788266226525
+          modified: 1788289408325
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049213.25
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Psychology",
+              "description": "Understand human behavior, motivation, emotions and decision-making",
+              "icon": "brain",
+              "color": "purple"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |+
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind with only name returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind - Photography
+        meta:
+          id: req_273bacbf735b4e72930c1a93c4041b7d
+          created: 1788266249013
+          modified: 1788289415214
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049210.125
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Photography",
+              "description": "Explore visual storytelling, composition and documenting everyday life",
+              "icon": "camera",
+              "color": "orange"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |+
+            const body = insomnia.response.json();
+
+            insomnia.test('Create mind with only name returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations"
+        name: Get User Combinations
+        meta:
+          id: req_f7190b35939d49f0b0875bffbe8e7137
+          created: 1788266557641
+          modified: 1788289254773
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048907
+        method: GET
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            const combinationId = Number(
+                insomnia.environment.get('combination_id')
+            );
+
+            insomnia.test('Get user combinations returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Response is an array', () => {
+                insomnia.expect(body).to.be.an('array');
+            });
+
+            insomnia.test('Response contains created combination', () => {
+                const combination = body.find(
+                    item => item.id === combinationId
+                );
+
+                insomnia.expect(combination).to.not.eql(undefined);
+            });
+
+            insomnia.test('Created combination contains 2 minds', () => {
+                const combination = body.find(
+                    item => item.id === combinationId
+                );
+
+                insomnia.expect(combination.minds).to.be.an('array');
+                insomnia.expect(combination.minds.length).to.eql(2);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/{{ combination_id }}"
+        name: Get Combination By ID
+        meta:
+          id: req_95f2f4547c5f403481b0aa7537875e38
+          created: 1788279071860
+          modified: 1788289269398
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048807
+        method: GET
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            const combinationId = Number(
+                insomnia.environment.get('combination_id')
+            );
+
+            const mindId1 = Number(
+                insomnia.environment.get('mind_id_1')
+            );
+
+            const mindId2 = Number(
+                insomnia.environment.get('mind_id_2')
+            );
+
+            insomnia.test('Get combination by id returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Returns correct combination id', () => {
+                insomnia.expect(body.id).to.eql(combinationId);
+            });
+
+            insomnia.test('Combination contains 2 minds', () => {
+                insomnia.expect(body.minds).to.be.an('array');
+                insomnia.expect(body.minds.length).to.eql(2);
+            });
+
+            insomnia.test('Combination contains requested minds', () => {
+                const ids = body.minds.map(mind => mind.id);
+
+                insomnia.expect(ids).to.include(mindId1);
+                insomnia.expect(ids).to.include(mindId2);
+            });
+
+            insomnia.test('Combination has createdAt', () => {
+                insomnia.expect(body.createdAt).to.be.a('string');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/999999"
+        name: Get Combination By ID - Not Found
+        meta:
+          id: req_d08f13b263834a48a9a147168be19633
+          created: 1788279154258
+          modified: 1788289282009
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048707
+        method: GET
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Unknown combination returns 404', () => {
+                insomnia.expect(insomnia.response.code).to.eql(404);
+            });
+
+            insomnia.test('Returns expected error message', () => {
+                insomnia.expect(body.message)
+                    .to.eql('Mind combination not found');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/random"
+        name: Create Random Combination
+        meta:
+          id: req_7184e132dfc7408b8554f15f89023d2d
+          created: 1788287796557
+          modified: 1788289289669
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048607
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "count": 2
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Random combination returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('Random combination has id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+            insomnia.test('Random combination contains 2 minds', () => {
+                insomnia.expect(body.minds).to.be.an('array');
+                insomnia.expect(body.minds.length).to.eql(2);
+            });
+
+            insomnia.test('All returned minds are active', () => {
+                body.minds.forEach(mind => {
+                    insomnia.expect(mind.archived).to.eql(false);
+                });
+            });
+
+            insomnia.test('Combination has createdAt', () => {
+                insomnia.expect(body.createdAt).to.be.a('string');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/login"
+        name: Login user
+        meta:
+          id: req_d4f30954d2e445229131e6b4fd537a9c
+          created: 1788288120803
+          modified: 1788288123405
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049307
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "{{ email }}",
+              "password": "{{ password }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Login returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Login returns token', () => {
+                insomnia.expect(body.token).to.be.a('string');
+                insomnia.expect(body.token.length).to.be.greaterThan(0);
+            });
+
+            insomnia.environment.set('token', body.token);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/random"
+        name: Create Random Combination - Too Few Minds
+        meta:
+          id: req_08c82a76050c415e97481282371ce98e
+          created: 1788288283126
+          modified: 1788289299178
+          isPrivate: false
+          description: ""
+          sortKey: -1788287949472
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "count": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Random combination with one mind returns 400', () =>
+            {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+
+
+            insomnia.test('Validation error mentions count', () => {
+                insomnia.expect(body.count).to.exist;
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/random"
+        name: Create Random Combination - Not Enough Active Minds
+        meta:
+          id: req_1b8ba78c223f40d2a2603d6591366162
+          created: 1788288303905
+          modified: 1788289306530
+          isPrivate: false
+          description: ""
+          sortKey: -1788287899904.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "count": 50
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Not enough minds returns 400', () => {
+                insomnia.expect(insomnia.response.code).to.eql(400);
+            });
+
+
+            insomnia.test('Returns expected error message', () => {
+                insomnia.expect(body.message)
+                    .to.eql('Not enough active minds to create this combination');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/random"
+        name: Create Random Combination - No Token
+        meta:
+          id: req_595c74a2339f47e5bf00492ce1fd428f
+          created: 1788288540190
+          modified: 1788289312462
+          isPrivate: false
+          description: ""
+          sortKey: -1788287899804.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "count": 2
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          disabled: true
+          token: "{{ token }}"
+        scripts:
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Random combination without token returns 401', () =>
+            {
+                insomnia.expect(insomnia.response.code).to.eql(401);
+            });
+
+
+            insomnia.test('Returns unauthorized message', () => {
+                insomnia.expect(body.message).to.eql('Unauthorized');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/minds"
+        name: Create Test Mind - Video Creation
+        meta:
+          id: req_449402eb1f1949a5894f82987caf7782
+          created: 1788288766247
+          modified: 1788289369599
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049232
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "name": "Video Creation",
+              "description": "Create short-form videos, experiment with storytelling and develop creative concepts",
+              "icon": "camera",
+              "color": "red"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Create second test mind returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+            insomnia.test('Second test mind has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+            insomnia.environment.set('mind_id_2', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations/{{ combination_id }}"
+        name: Get Combination By ID - No Token
+        meta:
+          id: req_36080d18f02a450e9ba666d79b3ac234
+          created: 1788289099426
+          modified: 1788289275888
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048757
+        method: GET
+        authentication:
+          type: bearer
+          disabled: true
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get combination without token returns 401', () => {
+                insomnia.expect(insomnia.response.code).to.eql(401);
+            });
+
+            insomnia.test('Returns unauthorized message', () => {
+                insomnia.expect(body.message).to.eql('Unauthorized');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/mind-combinations"
+        name: Get User Combinations - No Token
+        meta:
+          id: req_5e0d0c5f65254afb9dcacc189a3028d5
+          created: 1788289149625
+          modified: 1788289261814
+          isPrivate: false
+          description: ""
+          sortKey: -1788288048857
+        method: GET
+        authentication:
+          type: bearer
+          disabled: true
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get combinations without token returns 401', () => {
+                insomnia.expect(insomnia.response.code).to.eql(401);
+            });
+
+            insomnia.test('Returns unauthorized message', () => {
+                insomnia.expect(body.message).to.eql('Unauthorized');
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/register"
+        name: Register user
+        meta:
+          id: req_59e822c484d34e449d5b3f885123b032
+          created: 1788289185129
+          modified: 1788289187035
+          isPrivate: false
+          description: ""
+          sortKey: -1788288049407
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "{{ email }}",
+              "password": "{{ password }}",
+              "displayName": "Insomnia Test User"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          preRequest: |-
+            const uniqueEmail = `insomnia-test-${Date.now()}@example.com`;
+
+            insomnia.environment.set("email", uniqueEmail);
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Register user returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+
+            insomnia.test('Registered user has expected email', () => {
+                insomnia.expect(body.email).to.eql(insomnia.environment.get('email'));
+            });
+
+
+            insomnia.test('Registered user has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+
+            insomnia.environment.set('user_id', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: User requests
+    meta:
+      id: fld_084e838f65dc4d79a9035d075d089bce
+      created: 1788288082950
+      modified: 1788288082950
+      sortKey: -1788288082950
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/users/register"
+        name: Register user
+        meta:
+          id: req_3c295c8a67e245b498e22af9eea78735
+          created: 1788177183138
+          modified: 1788288093267
+          isPrivate: false
+          description: ""
+          sortKey: -1788288089011
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "{{ email }}",
+              "password": "{{ password }}",
+              "displayName": "Insomnia Test User"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          preRequest: |-
+            const uniqueEmail = `insomnia-test-${Date.now()}@example.com`;
+
+            insomnia.environment.set("email", uniqueEmail);
+          afterResponse: >-
+            const body = insomnia.response.json();
+
+
+            insomnia.test('Register user returns 201', () => {
+                insomnia.expect(insomnia.response.code).to.eql(201);
+            });
+
+
+            insomnia.test('Registered user has expected email', () => {
+                insomnia.expect(body.email).to.eql(insomnia.environment.get('email'));
+            });
+
+
+            insomnia.test('Registered user has an id', () => {
+                insomnia.expect(body.id).to.be.a('number');
+            });
+
+
+            insomnia.environment.set('user_id', body.id);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/login"
+        name: Login user
+        meta:
+          id: req_0c1015fd58b941f7af6792b73c7f2aa3
+          created: 1788177454800
+          modified: 1788288091992
+          isPrivate: false
+          description: ""
+          sortKey: -1788288088911
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "{{ email }}",
+              "password": "{{ password }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Login returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Login returns token', () => {
+                insomnia.expect(body.token).to.be.a('string');
+                insomnia.expect(body.token.length).to.be.greaterThan(0);
+            });
+
+            insomnia.environment.set('token', body.token);
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/me"
+        name: "Get current user "
+        meta:
+          id: req_b2715e340d3d49e5b95cdde30910b7be
+          created: 1788177632626
+          modified: 1788288090427
+          isPrivate: false
+          description: ""
+          sortKey: -1788288088811
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ token }}"
+        scripts:
+          afterResponse: |-
+            const body = insomnia.response.json();
+
+            insomnia.test('Get current user returns 200', () => {
+                insomnia.expect(insomnia.response.code).to.eql(200);
+            });
+
+            insomnia.test('Returns correct user id', () => {
+                insomnia.expect(body.id).to.eql(
+                    Number(insomnia.environment.get('user_id'))
+                );
+            });
+
+            insomnia.test('Returns correct email', () => {
+                insomnia.expect(body.email).to.eql(
+                    insomnia.environment.get('email')
+                );
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/users/me"
+        name: Get current user without token
+        meta:
+          id: req_9c291a99249845899e39c28a8d417891
+          created: 1788177698287
+          modified: 1788288088748
+          isPrivate: false
+          description: ""
+          sortKey: -1788288088711
+        method: GET
+        scripts:
+          afterResponse: |-
+            insomnia.test('Get current user without token returns 401', () => {
+                insomnia.expect(insomnia.response.code).to.eql(401);
+            });
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_69b89c395ca6982e8b247518cc4ed479a819c5a2
+    created: 1788177103111
+    modified: 1788289549416
+  cookies: []
+
+environments:
+  name: Base Environment
+  meta:
+    id: env_69b89c395ca6982e8b247518cc4ed479a819c5a2
+    created: 1788177103111
+    modified: 1788289549417
+    isPrivate: false
+  data:
+    user_id: ""
+    email: ""
+    token: ""
+    mind_id: ""
+    mind_id_1: ""
+    mind_id_2: ""
+    combination_id: ""

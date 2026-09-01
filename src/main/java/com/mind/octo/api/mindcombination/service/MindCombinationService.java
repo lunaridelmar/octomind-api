@@ -5,17 +5,17 @@ import com.mind.octo.api.mind.entity.MindEntity;
 import com.mind.octo.api.mind.repository.MindRepository;
 import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
 import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
+import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
 import com.mind.octo.api.mindcombination.entity.MindCombinationEntity;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
+import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
 import com.mind.octo.api.mindcombination.repository.MindCombinationRepository;
 import com.mind.octo.api.user.entity.OctoUserEntity;
 import com.mind.octo.api.user.exception.UserNotFoundException;
 import com.mind.octo.api.user.repository.OctoUserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class MindCombinationService {
@@ -91,6 +91,40 @@ public class MindCombinationService {
                 );
 
         return toResponse(combination);
+    }
+
+    public MindCombinationResponse createRandomCombination(
+            Long userId,
+            RandomMindCombinationRequest request
+    ) {
+        OctoUserEntity user = octoUserRepository
+                .findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        List<MindEntity> activeMinds =
+                mindRepository.findAllByUserIdAndArchivedFalse(userId);
+
+        if (activeMinds.size() < request.count()) {
+            throw new NotEnoughMindsException(
+                    "Not enough active minds to create this combination"
+            );
+        }
+
+        List<MindEntity> shuffledMinds = new ArrayList<>(activeMinds);
+        Collections.shuffle(shuffledMinds);
+
+        Set<MindEntity> selectedMinds = new HashSet<>(
+                shuffledMinds.subList(0, request.count())
+        );
+
+        MindCombinationEntity combination = new MindCombinationEntity();
+        combination.setUser(user);
+        combination.setMinds(selectedMinds);
+
+        MindCombinationEntity savedCombination =
+                mindCombinationRepository.save(combination);
+
+        return toResponse(savedCombination);
     }
 
     private MindCombinationResponse toResponse(

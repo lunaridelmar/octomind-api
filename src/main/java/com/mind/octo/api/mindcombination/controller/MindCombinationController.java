@@ -2,6 +2,7 @@ package com.mind.octo.api.mindcombination.controller;
 
 import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
 import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
+import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
 import com.mind.octo.api.mindcombination.service.MindCombinationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -59,5 +60,20 @@ public class MindCombinationController {
         return ResponseEntity.ok(
                 mindCombinationService.getCombinationById(userId, id)
         );
+    }
+
+    @PostMapping("/random")
+    public ResponseEntity<MindCombinationResponse> createRandomCombination(
+            Authentication authentication,
+            @Valid @RequestBody RandomMindCombinationRequest request
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        MindCombinationResponse response =
+                mindCombinationService.createRandomCombination(userId, request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }

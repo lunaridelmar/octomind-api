@@ -2,6 +2,7 @@ package com.mind.octo.api.exception;
 
 import com.mind.octo.api.mind.exception.MindNotFoundException;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
+import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
 import com.mind.octo.api.user.exception.EmailAlreadyRegisteredException;
 import com.mind.octo.api.user.exception.InvalidCredentialsException;
 import com.mind.octo.api.user.exception.UserNotFoundException;
@@ -75,6 +76,15 @@ public class GlobalExceptionHandler {
     ) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", exception.getMessage()));
+    }
+
+    @ExceptionHandler(NotEnoughMindsException.class)
+    public ResponseEntity<Map<String, String>> handleNotEnoughMinds(
+            NotEnoughMindsException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", exception.getMessage()));
     }
 }

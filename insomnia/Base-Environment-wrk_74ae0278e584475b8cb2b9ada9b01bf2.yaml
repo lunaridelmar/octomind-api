@@ -11,7 +11,7 @@ environments:
   meta:
     id: env_e763b0ba1bfc4a5a934f2e6af20627c2a4b73047
     created: 1788176756995
-    modified: 1788181760627
+    modified: 1788289549418
     isPrivate: false
   data:
     base_url: http://localhost:8080
@@ -20,3 +20,6 @@ environments:
     token: ""
     user_id: ""
     mind_id: ""
+    mind_id_1: ""
+    mind_id_2: ""
+    combination_id: ""
