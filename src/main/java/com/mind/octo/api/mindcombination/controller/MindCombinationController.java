@@ -2,6 +2,7 @@ package com.mind.octo.api.mindcombination.controller;
 
 import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
 import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
+import com.mind.octo.api.mindcombination.dto.MindCombinationSuggestionsResponse;
 import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
 import com.mind.octo.api.mindcombination.service.MindCombinationService;
 import jakarta.validation.Valid;
@@ -75,5 +76,18 @@ public class MindCombinationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/{id}/suggestions")
+    public ResponseEntity<MindCombinationSuggestionsResponse> generateSuggestions(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        MindCombinationSuggestionsResponse response =
+                mindCombinationService.generateSuggestions(userId, id);
+
+        return ResponseEntity.ok(response);
     }
 }

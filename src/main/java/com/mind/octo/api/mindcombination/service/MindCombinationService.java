@@ -5,10 +5,12 @@ import com.mind.octo.api.mind.entity.MindEntity;
 import com.mind.octo.api.mind.repository.MindRepository;
 import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
 import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
+import com.mind.octo.api.mindcombination.dto.MindCombinationSuggestionsResponse;
 import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
 import com.mind.octo.api.mindcombination.entity.MindCombinationEntity;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
 import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
+import com.mind.octo.api.mindcombination.generator.MindCombinationGenerator;
 import com.mind.octo.api.mindcombination.repository.MindCombinationRepository;
 import com.mind.octo.api.user.entity.OctoUserEntity;
 import com.mind.octo.api.user.exception.UserNotFoundException;
@@ -23,15 +25,17 @@ public class MindCombinationService {
     private final MindCombinationRepository mindCombinationRepository;
     private final MindRepository mindRepository;
     private final OctoUserRepository octoUserRepository;
+    private final MindCombinationGenerator mindCombinationGenerator;
 
     public MindCombinationService(
             MindCombinationRepository mindCombinationRepository,
             MindRepository mindRepository,
-            OctoUserRepository octoUserRepository
+            OctoUserRepository octoUserRepository, MindCombinationGenerator mindCombinationGenerator
     ) {
         this.mindCombinationRepository = mindCombinationRepository;
         this.mindRepository = mindRepository;
         this.octoUserRepository = octoUserRepository;
+        this.mindCombinationGenerator = mindCombinationGenerator;
     }
 
     public MindCombinationResponse createCombination(
@@ -125,6 +129,29 @@ public class MindCombinationService {
                 mindCombinationRepository.save(combination);
 
         return toResponse(savedCombination);
+    }
+
+    public MindCombinationSuggestionsResponse generateSuggestions(
+            Long userId,
+            Long combinationId
+    ) {
+        MindCombinationEntity combination = mindCombinationRepository
+                .findByIdAndUserId(combinationId, userId)
+                .orElseThrow(() ->
+                        new InvalidMindCombinationException(
+                                "Mind combination not found"
+                        )
+                );
+
+        List<MindEntity> minds = new ArrayList<>(combination.getMinds());
+
+        List<String> suggestions =
+                mindCombinationGenerator.generate(minds);
+
+        return new MindCombinationSuggestionsResponse(
+                combination.getId(),
+                suggestions
+        );
     }
 
     private MindCombinationResponse toResponse(
