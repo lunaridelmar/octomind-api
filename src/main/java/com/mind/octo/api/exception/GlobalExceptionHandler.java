@@ -1,6 +1,7 @@
 package com.mind.octo.api.exception;
 
 import com.mind.octo.api.mind.exception.MindNotFoundException;
+import com.mind.octo.api.mindcombination.exception.AiServiceUnavailableException;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
 import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
 import com.mind.octo.api.user.exception.EmailAlreadyRegisteredException;
@@ -86,5 +87,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", exception.getMessage()));
+    }
+
+    @ExceptionHandler(AiServiceUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleAiServiceUnavailable(
+            AiServiceUnavailableException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of(
+                        "message",
+                        exception.getMessage()
+                ));
     }
 }

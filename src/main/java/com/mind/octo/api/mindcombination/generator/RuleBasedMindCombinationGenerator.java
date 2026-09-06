@@ -1,12 +1,18 @@
 package com.mind.octo.api.mindcombination.generator;
 
 import com.mind.octo.api.mind.entity.MindEntity;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@ConditionalOnProperty(
+        name = "octomind.generator.type",
+        havingValue = "rule-based",
+        matchIfMissing = true
+)
 public class RuleBasedMindCombinationGenerator
         implements MindCombinationGenerator {
 
