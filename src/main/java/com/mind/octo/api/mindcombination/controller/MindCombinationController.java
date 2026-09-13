@@ -1,9 +1,6 @@
 package com.mind.octo.api.mindcombination.controller;
 
-import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
-import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
-import com.mind.octo.api.mindcombination.dto.MindCombinationSuggestionsResponse;
-import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
+import com.mind.octo.api.mindcombination.dto.*;
 import com.mind.octo.api.mindcombination.service.MindCombinationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -89,5 +86,18 @@ public class MindCombinationController {
                 mindCombinationService.generateSuggestions(userId, id);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/suggestions")
+    public ResponseEntity<List<MindCombinationSuggestionResponse>> getSuggestions(
+            Authentication authentication,
+            @PathVariable Long id
+    ) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        List<MindCombinationSuggestionResponse> suggestions =
+                mindCombinationService.getSuggestions(userId, id);
+
+        return ResponseEntity.ok(suggestions);
     }
 }

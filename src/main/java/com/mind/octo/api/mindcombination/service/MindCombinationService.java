@@ -3,15 +3,14 @@ package com.mind.octo.api.mindcombination.service;
 import com.mind.octo.api.mind.dto.MindResponse;
 import com.mind.octo.api.mind.entity.MindEntity;
 import com.mind.octo.api.mind.repository.MindRepository;
-import com.mind.octo.api.mindcombination.dto.CreateMindCombinationRequest;
-import com.mind.octo.api.mindcombination.dto.MindCombinationResponse;
-import com.mind.octo.api.mindcombination.dto.MindCombinationSuggestionsResponse;
-import com.mind.octo.api.mindcombination.dto.RandomMindCombinationRequest;
+import com.mind.octo.api.mindcombination.dto.*;
 import com.mind.octo.api.mindcombination.entity.MindCombinationEntity;
+import com.mind.octo.api.mindcombination.entity.MindCombinationSuggestionEntity;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
 import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
 import com.mind.octo.api.mindcombination.generator.MindCombinationGenerator;
 import com.mind.octo.api.mindcombination.repository.MindCombinationRepository;
+import com.mind.octo.api.mindcombination.repository.MindCombinationSuggestionRepository;
 import com.mind.octo.api.user.entity.OctoUserEntity;
 import com.mind.octo.api.user.exception.UserNotFoundException;
 import com.mind.octo.api.user.repository.OctoUserRepository;
@@ -26,16 +25,18 @@ public class MindCombinationService {
     private final MindRepository mindRepository;
     private final OctoUserRepository octoUserRepository;
     private final MindCombinationGenerator mindCombinationGenerator;
+    private final MindCombinationSuggestionRepository suggestionRepository;
 
     public MindCombinationService(
             MindCombinationRepository mindCombinationRepository,
             MindRepository mindRepository,
-            OctoUserRepository octoUserRepository, MindCombinationGenerator mindCombinationGenerator
+            OctoUserRepository octoUserRepository, MindCombinationGenerator mindCombinationGenerator, MindCombinationSuggestionRepository suggestionRepository
     ) {
         this.mindCombinationRepository = mindCombinationRepository;
         this.mindRepository = mindRepository;
         this.octoUserRepository = octoUserRepository;
         this.mindCombinationGenerator = mindCombinationGenerator;
+        this.suggestionRepository = suggestionRepository;
     }
 
     public MindCombinationResponse createCombination(
@@ -148,10 +149,50 @@ public class MindCombinationService {
         List<String> suggestions =
                 mindCombinationGenerator.generate(minds);
 
+        List<MindCombinationSuggestionEntity> entities =
+                suggestions.stream()
+                        .map(text -> {
+                            MindCombinationSuggestionEntity entity =
+                                    new MindCombinationSuggestionEntity();
+
+                            entity.setText(text);
+                            entity.setCombination(combination);
+
+                            return entity;
+                        })
+                        .toList();
+
+        suggestionRepository.saveAll(entities);
+
         return new MindCombinationSuggestionsResponse(
                 combination.getId(),
                 suggestions
         );
+    }
+
+    public List<MindCombinationSuggestionResponse> getSuggestions(
+            Long userId,
+            Long combinationId
+    ) {
+        MindCombinationEntity combination = mindCombinationRepository
+                .findByIdAndUserId(combinationId, userId)
+                .orElseThrow(() ->
+                        new InvalidMindCombinationException(
+                                "Mind combination not found"
+                        )
+                );
+
+        return suggestionRepository
+                .findAllByCombinationIdOrderByCreatedAtAsc(combination.getId())
+                .stream()
+                .map(suggestion ->
+                        new MindCombinationSuggestionResponse(
+                                suggestion.getId(),
+                                suggestion.getText(),
+                                suggestion.getCreatedAt()
+                        )
+                )
+                .toList();
     }
 
     private MindCombinationResponse toResponse(

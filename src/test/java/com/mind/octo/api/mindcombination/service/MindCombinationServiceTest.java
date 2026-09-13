@@ -10,6 +10,7 @@ import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationExcepti
 import com.mind.octo.api.mindcombination.exception.NotEnoughMindsException;
 import com.mind.octo.api.mindcombination.generator.MindCombinationGenerator;
 import com.mind.octo.api.mindcombination.repository.MindCombinationRepository;
+import com.mind.octo.api.mindcombination.repository.MindCombinationSuggestionRepository;
 import com.mind.octo.api.user.entity.OctoUserEntity;
 import com.mind.octo.api.user.exception.UserNotFoundException;
 import com.mind.octo.api.user.repository.OctoUserRepository;
@@ -47,13 +48,17 @@ class MindCombinationServiceTest {
 
     private MindCombinationService mindCombinationService;
 
+    @Mock
+    private MindCombinationSuggestionRepository suggestionRepository;
+
     @BeforeEach
     void setUp() {
         mindCombinationService = new MindCombinationService(
                 mindCombinationRepository,
                 mindRepository,
                 octoUserRepository,
-                mindCombinationGenerator
+                mindCombinationGenerator,
+                suggestionRepository
         );
     }
 
