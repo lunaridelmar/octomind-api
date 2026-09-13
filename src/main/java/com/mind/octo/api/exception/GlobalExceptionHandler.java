@@ -1,5 +1,6 @@
 package com.mind.octo.api.exception;
 
+import com.mind.octo.api.activity.exception.InvalidActivityException;
 import com.mind.octo.api.mind.exception.MindNotFoundException;
 import com.mind.octo.api.mindcombination.exception.AiServiceUnavailableException;
 import com.mind.octo.api.mindcombination.exception.InvalidMindCombinationException;
@@ -99,5 +100,14 @@ public class GlobalExceptionHandler {
                         "message",
                         exception.getMessage()
                 ));
+    }
+
+    @ExceptionHandler(InvalidActivityException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidActivity(
+            InvalidActivityException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", exception.getMessage()));
     }
 }
